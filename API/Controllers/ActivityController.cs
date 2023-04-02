@@ -1,42 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Application.Activities.Commands;
+using Application.Activities.Queries;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Persistence;
+
 
 namespace API.Controllers
 {
-  [ApiController]
-  [Route("api/v1/activities")]
-  public class ActivityController : ControllerBase
+  public class ActivityController : BaseApiController
   {
-    public DataContext _context { get; }
-    public ActivityController(DataContext context)
-    {
-      _context = context;
-    }
-
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<Activity>>> ListActivity()
     {
-      return await _context.Activities.ToListAsync();
+      return await Mediator.Send(new ReactivityList.Query());
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Activity>> ActivityDetails(Guid id)
     {
-      return await _context.Activities.FindAsync(id);
+      return await Mediator.Send(new ReactivityDetails.Query() { Id = id });
     }
 
     [HttpPost]
-    public async Task<ActionResult<Activity>> CreateActivity(Activity activity)
+    public async Task<ActionResult> CreateActivity(Activity activity)
     {
-      _context.Activities.Add(activity);
-      await _context.SaveChangesAsync();
-      return CreatedAtAction(nameof(ActivityDetails), new { id = activity.Id }, activity);
+      return Ok(await Mediator.Send(new ReactivityCreate.Command() { activity = activity }));
     }
 
     [HttpPut("{id}")]
@@ -46,20 +33,17 @@ namespace API.Controllers
       {
         return BadRequest();
       }
-
-      _context.Entry(activity).State = EntityState.Modified;
-      await _context.SaveChangesAsync();
-      return Ok("Activity updated");
+      return Ok(await Mediator.Send(new ReactivityUpdate.Command() { activity = activity }));
     }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<Activity>> DeleteActivity(Guid id)
-    {
-      _context.Activities.Where(p => p.Id == id).ExecuteDelete();
-      await _context.SaveChangesAsync();
-      return Ok("Activity deleted");
+    // [HttpDelete("{id}")]
+    // public async Task<ActionResult<Activity>> DeleteActivity(Guid id)
+    // {
+    //   _context.Activities.Where(p => p.Id == id).ExecuteDelete();
+    //   await _context.SaveChangesAsync();
+    //   return Ok("Activity deleted");
 
-    }
+    // }
 
   }
 }
