@@ -36,14 +36,5 @@ namespace API.Controllers
       return Ok(await Mediator.Send(new ReactivityUpdate.Command() { activity = activity }));
     }
 
-    // [HttpDelete("{id}")]
-    // public async Task<ActionResult<Activity>> DeleteActivity(Guid id)
-    // {
-    //   _context.Activities.Where(p => p.Id == id).ExecuteDelete();
-    //   await _context.SaveChangesAsync();
-    //   return Ok("Activity deleted");
-
-    // }
-
   }
 }
