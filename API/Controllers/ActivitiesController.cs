@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-  public class ActivityController : BaseApiController
+  public class ActivitiesController : BaseApiController
   {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<Activity>>> ListActivity()
@@ -29,11 +29,14 @@ namespace API.Controllers
     [HttpPut("{id}")]
     public async Task<ActionResult<Activity>> UpdateActivity(Guid id, Activity activity)
     {
-      if (id != activity.Id)
-      {
-        return BadRequest();
-      }
+      activity.Id = id;
       return Ok(await Mediator.Send(new ReactivityUpdate.Command() { activity = activity }));
+    }
+
+    [HttpDelete("{id:Guid}")]
+    public async Task<ActionResult<Activity>> DeleteActivity(Guid id)
+    {
+      return Ok(await Mediator.Send(new ReactivityDelete.Command() { Id = id }));
     }
 
   }

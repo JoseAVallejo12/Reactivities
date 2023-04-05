@@ -2,6 +2,7 @@ using System.Reflection;
 using Application;
 using Application.Activities.Commands;
 using Application.Activities.Queries;
+using Application.Core;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
@@ -18,7 +19,7 @@ builder.Services.AddSwaggerGen();
 // MediatR Service config
 builder.Services.AddMediatR(typeof(ReactivityList.Query));
 builder.Services.AddMediatR(typeof(ReactivityCreate.Command));
-
+builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
 builder.Services.AddDbContext<DataContext>(opt =>
 {
   opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
